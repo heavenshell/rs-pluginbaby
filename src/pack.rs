@@ -31,23 +31,6 @@ impl Pack {
     }
 }
 
-/*
-pub struct Pack<'a> {
-    path: &'a Path,
-    url: String,
-    remote_name: String,
-}
-
-impl<'a> Pack<'a> {
-    pub fn new(path: &'a Path, url: &str, remote_name: &str) -> Pack<'a> {
-        Pack {
-            path,
-            url: url.to_string(),
-            remote_name: remote_name.to_string(),
-        }
-    }
-}
-*/
 pub fn fetch_repo(path: &PathBuf, url: &str) -> Result<(), Error> {
     let repo = Repository::open(&path).expect("No repository found");
     let mut remote = repo.remote_anonymous(&url)?;
@@ -86,36 +69,6 @@ pub fn get_package(path: PathBuf, remote_name: &str) -> Option<Pack> {
     let url = remote.url()?;
     let pack = Pack::new(path, url, remote_name);
     Some(pack)
-    /*
-        for remote in repo.remotes().iter() {
-            for name in remote {
-                let name = match name {
-                    Some(r) => r,
-                    None => {
-                        continue;
-                    }
-                };
-                if name != "origin" {
-                    continue;
-                }
-                let r = match repo.find_remote(name) {
-                    Ok(r) => r,
-                    Err(_e) => {
-                        continue;
-                    }
-                };
-                let url = match r.url() {
-                    Some(u) => u,
-                    None => {
-                        continue;
-                    }
-                };
-
-                let pack = Pack::new(path, url, name);
-                return pack;
-            }
-        }
-    */
 }
 
 pub fn collect_git_paths(base_path: PathBuf, max_depth: usize) -> Vec<PathBuf> {
@@ -145,19 +98,6 @@ pub fn collect_git_paths(base_path: PathBuf, max_depth: usize) -> Vec<PathBuf> {
 }
 
 pub fn collect_repos(base_path: PathBuf, max_depth: usize) -> Vec<Pack> {
-    // let walker = WalkDir::new(&path).max_depth(3).follow_links(true);
-    // let mut paths = vec![];
-    // for entry in walker {
-    //     let entry: DirEntry = entry.unwrap();
-    //     if !entry.file_type().is_dir() {
-    //         continue;
-    //     }
-    //     let git_dir = entry.path().join(".git");
-    //     if fs::metadata(&git_dir).is_ok() {
-    //         paths.push(entry);
-    //     }
-    // }
-
     let mut packs: Vec<Pack> = Vec::new();
     let paths = collect_git_paths(base_path, max_depth);
     for path in paths {

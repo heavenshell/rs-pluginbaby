@@ -1,6 +1,5 @@
 use std::io;
 
-// use dirs::home_dir;
 #[cfg(debug_assertions)]
 use better_panic;
 use clap::ArgMatches;
@@ -19,12 +18,6 @@ fn main() {
         .most_recent_first(false)
         .install();
 
-    // let home = home_dir().expect("No home directory found");
-    // let pack = home.join(".vim/pack");
-    // let packs = collect_repos(&pack);
-    // for p in packs {
-    //     dbg!(p);
-    // }
     env_logger::from_env(Env::default().default_filter_or("info")).init();
     let app_matches = cli::build_cli().get_matches();
 
