@@ -4,7 +4,7 @@ use std::io::BufReader;
 use std::path::PathBuf;
 
 use clap::ArgMatches;
-use log::{error, debug, info};
+use log::{debug, error, info};
 use serde_yaml;
 
 use crate::pack::{clone_repo, Pack};
@@ -67,11 +67,10 @@ pub fn execute(matches: &ArgMatches) {
     info!("Start Restoring");
     for repo in &repos {
         let url = repo.url();
-        let path = if force { &dist } else { repo.path() };
         let path = if force {
-            path.join(repo.path().iter().last().unwrap())
+            dist.join(repo.path().to_path_buf().iter().last().unwrap())
         } else {
-            path.to_path_buf()
+            repo.path().to_path_buf()
         };
 
         let dirname = match path.parent() {
@@ -91,7 +90,10 @@ pub fn execute(matches: &ArgMatches) {
         if metadata(dirname).is_err() {
             match create_dir_all(dirname) {
                 Ok(v) => v,
-                Err(_) => continue,
+                Err(e) => {
+                    error!("{:?}", e);
+                    continue;
+                }
             };
         }
         debug!("Restore {:?}", path);
@@ -99,7 +101,7 @@ pub fn execute(matches: &ArgMatches) {
             Ok(v) => v,
             Err(e) => {
                 error!("{:?}", e);
-                continue
+                continue;
             }
         };
     }
